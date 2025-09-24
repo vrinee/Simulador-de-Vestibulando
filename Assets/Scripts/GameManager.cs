@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
     public double coefficientUpgradeCostScaling = 1.15; //fator de escala do custo do upgrade do coeficiente da fórmula
 
     public int coefficientUpgradeLevel = 0; //nível do upgrade do coeficiente da fórmula
-    public double coefficientIncrement = 1;
 
     [Header("Exponente da Fórmula")]
     public double exponent = 1;//exponente da fórmula
@@ -48,6 +47,12 @@ public class GameManager : MonoBehaviour
     [Header("Tipo da Fórmula")]
     public int formulaType = 0; // tipo/nível da fórmula que está sendo usada
 
+    public int maxFormulaType = 3; // número máximo de tipos/níveis de fórmulas
+
+    public double formulaUpgradeCost = 1000; // custo para fazer o upgrade da fórmula
+
+    public double formulaUpgradeCostScaling = 5; // fator de escala do custo para fazer o upgrade da fórmula
+
     [Header("Elementos da UI")]
     public TMP_Text vagasText; //Elemento de UI para a quantidade de vagas
 
@@ -55,11 +60,15 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text formulaText; //Elemento de UI para a fórmula
 
+    public TMP_Text debugText; //Elemento de UI para debug (se necessário)
+
     private string formulaString = ""; //string para mostrar a fórmula que está sendo usada
 
     private double vagas = 0; //variável que guarda o valor calculado da fórmula
 
     private double vagasPorSegundo = 0; //variável que guarda o valor de vagas por segundo
+
+    private bool isSmall = false; //variável para saber se as vagas são pequenas (menos que 1000)
 
     public double GetVagas() //Função para devolver o valor atual de vagas
     {
@@ -101,23 +110,44 @@ public class GameManager : MonoBehaviour
         return new double[] { cost, exponentScaling, exponentUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
     }
     
-
-    
+    public double[] UpgradeFormula()
+    {
+        formulaType++;
+        double cost = formulaUpgradeCost;
+        vagas -= cost;
+        formulaUpgradeCost *= formulaUpgradeCostScaling;
+        if (formulaType >= maxFormulaType) cost = 0; //se já estiver no nível máximo, o custo é 0. Fazer handler no botão
+        CalculateFormula();
+        return new double[] { cost, formulaType, maxFormulaType };
+    }
     private void UpdateVagas()
     {
         float tempoPassado = Time.deltaTime; //tempo que passou desde o último frame
+        debugText.text = $"Debug: {tempoPassado.ToString("0.0000")}";
         vagas += vagasPorSegundo * tempoPassado;
+        vagas = Math.Max(vagas, 0); //garante que vagas nunca fique negativa
+        if(vagas < 1000 && isSmall)
+        {
+            isSmall = true;
+        }
+        else if (vagas >= 1000 && isSmall)
+        {
+            isSmall = false;
+        }
     }
 
     private void UpdateGUI()
     {
-        vagasText.text = $"Vagas: {vagas.ToString("0.00e0")}";
+        string vagasStr = isSmall ? vagas.ToString("0.##") : vagas.ToString("0.00e0");
+        vagasText.text = $"Vagas: {vagasStr}";
         vagasPorSegundoText.text = $"Vagas por segundo: {vagasPorSegundo.ToString("0.00e0")}";
         formulaText.text = $"Fórmula: {formulaString}";
     }
     private void CalculateFormula() //fução para fazer o calculo do valor da fórmula baseado em qual nível ela está
     {
         string numBaseStr = "";
+        string coefficientStr = coefficient.ToString("0.##");
+        string exponentStr = exponent.ToString("0.##");
         if (numBase >= 1000)
         {
             numBaseStr = numBase.ToString("0.00e0");
@@ -129,23 +159,23 @@ public class GameManager : MonoBehaviour
         switch (formulaType)
         {
             case 0:
-                formulaString = $"({numBaseStr}^{exponent}) * {coefficient}";
+                formulaString = $"({numBaseStr}^{exponentStr}) * {coefficientStr}";
                 vagasPorSegundo = Math.Pow(numBase, exponent) * coefficient;
                 break;
             case 1:
-                formulaString = $"({numBaseStr} * {coefficient})^{exponent}";
+                formulaString = $"({numBaseStr} * {coefficientStr})^{exponentStr}";
                 vagasPorSegundo = Math.Pow(numBase * coefficient, exponent);
                 break;
             case 2:
-                formulaString = $"({numBaseStr} * {coefficient})^({exponent} * {coefficient})";
+            formulaString = $"({numBaseStr} * {coefficientStr})^({exponentStr} * {coefficientStr})";
                 vagasPorSegundo = Math.Pow(numBase * coefficient, exponent * coefficient);
                 break;
             case 3:
-                formulaString = $"({numBaseStr} * {coefficient})^^{exponent}";
+                formulaString = $"({numBaseStr} * {coefficientStr})^{exponentStr}";
                 vagasPorSegundo = Math.Pow(numBase * coefficient, exponent * exponent);
                 break;
             default:
-                formulaString = $"({numBaseStr}^{exponent}) * {coefficient}";
+                formulaString = $"({numBaseStr}^{exponentStr}) * {coefficientStr}";
                 vagasPorSegundo = Math.Pow(numBase, exponent) * coefficient;
                 break;
         }
@@ -166,6 +196,32 @@ public class GameManager : MonoBehaviour
         UpdateVagas();
         UpdateGUI();
         if (!debugMode) return;
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            vagas += 1000;
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.B)){
+            UpgradeBase();
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.C)){
+            UpgradeCoefficient();
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E)){
+            UpgradeExpoent();
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F)){
+            UpgradeFormula();
+            return;
+        }
+
         //adicionar coisas para debug (ex: apertar teclas para ganhar vagas, etc)
     }
 }
