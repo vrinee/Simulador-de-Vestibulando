@@ -496,7 +496,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "F\xF3rmula:"
+  m_text: 'Debug:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -834,7 +834,6 @@ MonoBehaviour:
   numBaseUpgradeLevel: 0
   coefficient: 1
   coefficientScaling: 1.1
-  coefficientScalingUpgrade: 1.05
   coefficientUpgradeCost: 50
   coefficientUpgradeCostScaling: 1.15
   coefficientUpgradeLevel: 0
