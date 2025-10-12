@@ -1,9 +1,11 @@
 using UnityEngine;
 using System;
 using TMPro;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
+
 
     public bool debugMode = false; //modo de debug para testes
 
@@ -198,33 +200,31 @@ public class GameManager : MonoBehaviour
     {
         UpdateVagas();
         UpdateGUI();
-        if (!debugMode) return;
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            vagas += 1000;
-            return;
-        }
+       
+    }
+    
+    public void OnUpgradeBaseClick()
+    {
+        UpgradeBase();
+    }
 
-        if (Input.GetKeyDown(KeyCode.B)){
-            UpgradeBase();
-            return;
-        }
+    public void OnUpgradeCoefficientClick()
+    {
+        UpgradeCoefficient();
+    }
 
-        if (Input.GetKeyDown(KeyCode.C)){
-            UpgradeCoefficient();
-            return;
-        }
+    public void OnUpgradeExpoentClick()
+    {
+        UpgradeExpoent();
+    }
 
-        if (Input.GetKeyDown(KeyCode.E)){
-            UpgradeExpoent();
-            return;
-        }
+    public void OnUpgradeFormulaClick()
+    {
+        UpgradeFormula();
+    }
 
-        if (Input.GetKeyDown(KeyCode.F)){
-            UpgradeFormula();
-            return;
-        }
-
-        //adicionar coisas para debug (ex: apertar teclas para ganhar vagas, etc)
+    public void OnDebugAddVagasClick()
+    {
+        vagas += 1000;
     }
 }
