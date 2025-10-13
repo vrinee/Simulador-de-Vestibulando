@@ -16,7 +16,7 @@ public class baseUpgrade : MonoBehaviour
 
     private double level;
 
-    public void PressButton()
+    /* public void PressButton()
     {
         double[] handler = gameManager.UpgradeBase();//pega os valores da função de upgrade do gameManager
         string costStr;
@@ -64,5 +64,5 @@ public class baseUpgrade : MonoBehaviour
         {
             button.interactable = true;
         }
-    }
+    } */
 }

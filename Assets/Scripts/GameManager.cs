@@ -16,17 +16,17 @@ public class GameManager : MonoBehaviour
     public Transform modalSpawnPoint;
 
     [Header("Base da Fórmula")]
-    public double numBase = 1;//base da fórmula
+    //base da fórmula
 
-    public double numBaseIncrement = 1; //incremento da base da fórmula
+    //incremento da base da fórmula
 
-    public double numBaseScaling = 1.2; //fator de escala do incremento da base da fórmula
+    //fator de escala do incremento da base da fórmula
 
-    public double numBaseUpgradeCost = 1; //custo do upgrade da base da fórmula
+    //custo do upgrade da base da fórmula
 
-    public double numBaseUpgradeCostScaling = 1.1; //fator de escala do custo do upgrade da base da fórmula
+    //fator de escala do custo do upgrade da base da fórmula
 
-    public int numBaseUpgradeLevel = 0; //nível do upgrade da base da fórmula
+    //nível do upgrade da base da fórmula
 
     [Header("Coeficiente da Fórmula")]
     public double coefficient = 1;//coeficiente da fórmula
@@ -86,11 +86,11 @@ public class GameManager : MonoBehaviour
         return vagas;
     }
 
-    public double GetNumBaseCost()
+    /* public double GetNumBaseCost()
     {
         return numBaseUpgradeCost;
     }
-
+ */
     public double GetCoefficientCost()
     {
         return coefficientUpgradeCost;
@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
         return formulaUpgradeCost;
     }
 
-    public double[] UpgradeBase() //Função para fazer o upgrade da base da fórmula  (handling feito no botão)
+/*     public double[] UpgradeBase() //Função para fazer o upgrade da base da fórmula  (handling feito no botão)
     {
         numBaseUpgradeLevel++;
         vagas -= numBaseUpgradeCost;
@@ -115,7 +115,7 @@ public class GameManager : MonoBehaviour
         numBaseUpgradeCost *= numBaseUpgradeCostScaling;
         CalculateFormula();
         return new double[] { numBaseUpgradeCost, numBaseIncrement, numBaseUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
-    }
+    } */
 
     public double[] UpgradeCoefficient() //Função para fazer o upgrade do coeficiente da fórmula  (handling feito no botão)
     {
@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         vagas -= coefficientUpgradeCost;
         coefficient *= coefficientScaling;
         coefficientUpgradeCost *= coefficientUpgradeCostScaling;
-        CalculateFormula();
+        //CalculateFormula();
         return new double[] { coefficientUpgradeCost, coefficientScaling, coefficientUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
     }
 
@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
         vagas -= exponentUpgradeCost;
         exponent *= exponentScaling;
         exponentUpgradeCost *= exponentUpgradeCostScaling;
-        CalculateFormula();
+        //CalculateFormula();
         return new double[] { exponentUpgradeCost, exponentScaling, exponentUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
     }
     
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
         vagas -= formulaUpgradeCost;
         formulaUpgradeCost *= formulaUpgradeCostScaling;
         if (formulaType >= maxFormulaType) formulaUpgradeCost = 0; //se já estiver no nível máximo, o custo é 0. Fazer handler no botão
-        CalculateFormula();
+        //CalculateFormula();
         return new double[] { formulaUpgradeCost, formulaType, maxFormulaType };
     }
     private void UpdateVagas()
@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
         vagasPorSegundoText.text = $"Vagas por segundo: {vpsStr}";
         formulaText.text = $"Fórmula: {formulaString}";
     }
-    private void CalculateFormula() //fução para fazer o calculo do valor da fórmula baseado em qual nível ela está
+/*     private void CalculateFormula() //fução para fazer o calculo do valor da fórmula baseado em qual nível ela está
     {
         string numBaseStr = "";
         string coefficientStr = coefficient.ToString("0.##");
@@ -217,14 +217,14 @@ public class GameManager : MonoBehaviour
         {
             isVPSSmall = false;
         }
-    }
+    } */
 
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        CalculateFormula();
+        //CalculateFormula();
         UpdateGUI();
     }
 
