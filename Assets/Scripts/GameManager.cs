@@ -2,12 +2,18 @@ using UnityEngine;
 using System;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.Mathematics;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
 
 
     public bool debugMode = false; //modo de debug para testes
+
+    public GameObject modalPrefab;
+
+    public Transform modalSpawnPoint;
 
     [Header("Base da Fórmula")]
     public double numBase = 1;//base da fórmula
@@ -25,7 +31,7 @@ public class GameManager : MonoBehaviour
     [Header("Coeficiente da Fórmula")]
     public double coefficient = 1;//coeficiente da fórmula
 
-    public double coefficientScaling = 1.2; //fator de escala do coeficiente da fórmula
+    public double coefficientScaling = 1.05; //fator de escala do coeficiente da fórmula
 
     public double coefficientUpgradeCost = 1000; //custo do upgrade do coeficiente da fórmula
 
@@ -36,7 +42,7 @@ public class GameManager : MonoBehaviour
     [Header("Exponente da Fórmula")]
     public double exponent = 1;//exponente da fórmula
 
-    public double exponentScaling = 1.1; //fator de escala do exponente da fórmula
+    public double exponentScaling = 1.01; //fator de escala do exponente da fórmula
 
     public double exponentUpgradeCost = 10000; //custo do upgrade do exponente da fórmula
 
@@ -71,59 +77,78 @@ public class GameManager : MonoBehaviour
     private bool isVagaSmall = false; //variável para saber se as vagas são pequenas (menos que 1000)
 
     private bool isVPSSmall = false; //variável para saber se as vagas por segund são pequenas (menos que 1000)
+
+    private bool infinity = false;
+
+    
     public double GetVagas() //Função para devolver o valor atual de vagas
     {
         return vagas;
     }
 
+    public double GetNumBaseCost()
+    {
+        return numBaseUpgradeCost;
+    }
+
+    public double GetCoefficientCost()
+    {
+        return coefficientUpgradeCost;
+    }
+
+    public double GetExponentCost()
+    {
+        return exponentUpgradeCost;
+    }
+
+    public double GetFormulaCost()
+    {
+        return formulaUpgradeCost;
+    }
+
     public double[] UpgradeBase() //Função para fazer o upgrade da base da fórmula  (handling feito no botão)
     {
         numBaseUpgradeLevel++;
-        double cost = numBaseUpgradeCost;
-        vagas -= cost;
+        vagas -= numBaseUpgradeCost;
         numBase += numBaseIncrement;
         numBaseIncrement *= numBaseScaling;
         numBaseUpgradeCost *= numBaseUpgradeCostScaling;
         CalculateFormula();
-        return new double[] { cost, numBaseIncrement, numBaseUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
+        return new double[] { numBaseUpgradeCost, numBaseIncrement, numBaseUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
     }
 
     public double[] UpgradeCoefficient() //Função para fazer o upgrade do coeficiente da fórmula  (handling feito no botão)
     {
         coefficientUpgradeLevel++;
-        double cost = coefficientUpgradeCost;
-        vagas -= cost;
+        vagas -= coefficientUpgradeCost;
         coefficient *= coefficientScaling;
         coefficientUpgradeCost *= coefficientUpgradeCostScaling;
         CalculateFormula();
-        return new double[] { cost, coefficientScaling, coefficientUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
+        return new double[] { coefficientUpgradeCost, coefficientScaling, coefficientUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
     }
 
-    public double[] UpgradeExpoent() //Função para fazer o upgrade do exponente da fórmula  (handling feito no botão)
+    public double[] UpgradeExponent() //Função para fazer o upgrade do exponente da fórmula  (handling feito no botão)
     {
         exponentUpgradeLevel++;
-        double cost = exponentUpgradeCost;
-        vagas -= cost;
+        vagas -= exponentUpgradeCost;
         exponent *= exponentScaling;
         exponentUpgradeCost *= exponentUpgradeCostScaling;
         CalculateFormula();
-        return new double[] { cost, exponentScaling, exponentUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
+        return new double[] { exponentUpgradeCost, exponentScaling, exponentUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
     }
     
     public double[] UpgradeFormula()
     {
         formulaType++;
-        double cost = formulaUpgradeCost;
-        vagas -= cost;
+        vagas -= formulaUpgradeCost;
         formulaUpgradeCost *= formulaUpgradeCostScaling;
-        if (formulaType >= maxFormulaType) cost = 0; //se já estiver no nível máximo, o custo é 0. Fazer handler no botão
+        if (formulaType >= maxFormulaType) formulaUpgradeCost = 0; //se já estiver no nível máximo, o custo é 0. Fazer handler no botão
         CalculateFormula();
-        return new double[] { cost, formulaType, maxFormulaType };
+        return new double[] { formulaUpgradeCost, formulaType, maxFormulaType };
     }
     private void UpdateVagas()
     {
         float tempoPassado = Time.deltaTime; //tempo que passou desde o último frame
-        debugText.text = $"Debug: {tempoPassado.ToString("0.0000")}";
         vagas += vagasPorSegundo * tempoPassado;
         vagas = Math.Max(vagas, 0); //garante que vagas nunca fique negativa
         if(vagas < 1000)
@@ -138,10 +163,18 @@ public class GameManager : MonoBehaviour
 
     private void UpdateGUI()
     {
-        string vagasStr = isVagaSmall ? vagas.ToString("0.##") : vagas.ToString("0.00e0");
+        string vagasStr;
+        if (infinity)
+        {
+            vagasStr = "Infinito!!";
+        }
+        else
+        {
+            vagasStr = isVagaSmall ? vagas.ToString("0.##") : vagas.ToString("0.00e0");
+        }
         string vpsStr = isVPSSmall ? vagasPorSegundo.ToString("0.##") + "/s" : vagasPorSegundo.ToString("0.00e0") + "/s";
         vagasText.text = $"Vagas: {vagasStr}";
-        vagasPorSegundoText.text = $"{vpsStr}";
+        vagasPorSegundoText.text = $"Vagas por segundo: {vpsStr}";
         formulaText.text = $"Fórmula: {formulaString}";
     }
     private void CalculateFormula() //fução para fazer o calculo do valor da fórmula baseado em qual nível ela está
@@ -200,31 +233,19 @@ public class GameManager : MonoBehaviour
     {
         UpdateVagas();
         UpdateGUI();
-       
+        if(Input.GetKeyDown(KeyCode.V))
+        {
+            OnDebugAddVagasClick();
+        }
+        if (vagas == double.PositiveInfinity && !infinity)
+        {
+            infinity = true;
+            Instantiate(modalPrefab, modalSpawnPoint);
+        }
     }
     
-    public void OnUpgradeBaseClick()
-    {
-        UpgradeBase();
-    }
-
-    public void OnUpgradeCoefficientClick()
-    {
-        UpgradeCoefficient();
-    }
-
-    public void OnUpgradeExpoentClick()
-    {
-        UpgradeExpoent();
-    }
-
-    public void OnUpgradeFormulaClick()
-    {
-        UpgradeFormula();
-    }
-
     public void OnDebugAddVagasClick()
     {
-        vagas += 1000;
+        vagas += double.MaxValue;
     }
 }
