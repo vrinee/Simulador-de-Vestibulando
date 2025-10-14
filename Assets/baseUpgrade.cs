@@ -16,15 +16,13 @@ public class baseUpgrade : MonoBehaviour
 
     private double level;
 
-    /* public void PressButton()
+    public void PressButton()
     {
-        double[] handler = gameManager.UpgradeBase();//pega os valores da função de upgrade do gameManager
+        
         string costStr;
         string incrementStr;
         //aranja os valores em suas devidas variaveis
-        cost = handler[0];
-        increment = handler[1];
-        level = handler[2];
+        
         //trata as variaveis para elas serem mais bonitas no display
         if (cost > 1000)
         {
@@ -49,9 +47,7 @@ public class baseUpgrade : MonoBehaviour
     void Start()
     {
         gameManager = FindFirstObjectByType<GameManager>(); // procura o primeiro objeto com gameManager
-        cost = gameManager.GetNumBaseCost(); // usa get para pegar o valor do upgrade
-        increment = gameManager.numBaseIncrement; //usa acesso direto devido a ser public
-        level = gameManager.numBaseUpgradeLevel;
+        
     }
     // Update is called once per frame
     void Update()
@@ -64,5 +60,5 @@ public class baseUpgrade : MonoBehaviour
         {
             button.interactable = true;
         }
-    } */
+    } 
 }

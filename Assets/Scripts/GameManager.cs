@@ -108,13 +108,13 @@ public class GameManager : MonoBehaviour
 
 /*     public double[] UpgradeBase() //Função para fazer o upgrade da base da fórmula  (handling feito no botão)
     {
-        numBaseUpgradeLevel++;
-        vagas -= numBaseUpgradeCost;
-        numBase += numBaseIncrement;
-        numBaseIncrement *= numBaseScaling;
-        numBaseUpgradeCost *= numBaseUpgradeCostScaling;
-        CalculateFormula();
-        return new double[] { numBaseUpgradeCost, numBaseIncrement, numBaseUpgradeLevel }; //Devolve o custo do upgrade, o quanto ele vai aumentar e o nível atual do upgrade
+        
+        
+        
+        
+        
+        
+        
     } */
 
     public double[] UpgradeCoefficient() //Função para fazer o upgrade do coeficiente da fórmula  (handling feito no botão)
@@ -182,6 +182,8 @@ public class GameManager : MonoBehaviour
         string numBaseStr = "";
         string coefficientStr = coefficient.ToString("0.##");
         string exponentStr = exponent.ToString("0.##");
+
+
         if (numBase >= 1000)
         {
             numBaseStr = numBase.ToString("0.00e0");
@@ -190,25 +192,9 @@ public class GameManager : MonoBehaviour
         {
             numBaseStr = numBase.ToString("0.##");
         }
-        switch (formulaType)
-        {
-            case 0:
-                formulaString = $"({numBaseStr}^{exponentStr}) * {coefficientStr}";
-                vagasPorSegundo = Math.Pow(numBase, exponent) * coefficient;
-                break;
-            case 1:
-                formulaString = $"({numBaseStr} * {coefficientStr})^{exponentStr}";
-                vagasPorSegundo = Math.Pow(numBase * coefficient, exponent);
-                break;
-            case 2:
-                formulaString = $"({numBaseStr} * {coefficientStr})^({exponentStr} * {coefficientStr})";
-                vagasPorSegundo = Math.Pow(numBase * coefficient, exponent * coefficient);
-                break;
-            default:
-                formulaString = $"({numBaseStr}^{exponentStr}) * {coefficientStr}";
-                vagasPorSegundo = Math.Pow(numBase, exponent) * coefficient;
-                break;
-        }
+
+
+
         if (vagasPorSegundo < 1000)
         {
             isVPSSmall = true;
